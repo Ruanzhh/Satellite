@@ -1,5 +1,5 @@
-from satellite import Satellite
-from dataStream import DataStream
+from .satellite import Satellite
+from .dataStream import DataStream
 import numpy as np
 import random
 import gym
@@ -25,6 +25,7 @@ class myEnv(MultiAgentEnv):
         episode_limit=1000,
         n_agents=5,
         satellite_num=50,
+        **kwargs,
         ):
         super(myEnv, self).__init__()
         self.time = 0 # 时隙的轮次
@@ -38,7 +39,7 @@ class myEnv(MultiAgentEnv):
         self.agent_list = []
         self.compression_ratio_list = [0, 0.05, 0.1] # 图像压缩率的列表
         self.alpha = 0.5  # 传输时间和数据量之间的权重系数
-        self.observation_space = 1 + 1 + 4 + 4  # 状态维度，数据量-1 + 所在卫星ID-1 + 四个邻居卫星的带宽-4 + 四个邻居卫星的ID-4
+        self.observation_space = 1 + 1 + 4 + 4 + 1  # 状态维度，数据量-1 + 所在卫星ID-1 + 四个邻居卫星的带宽-4 + 四个邻居卫星的ID-4 + 目的地-1
         # self.action_space = 7
         # self.action_space = [spaces.Discrete([7]) for _ in range(self.n_agents)]
         # self.observation_space = spaces
@@ -81,7 +82,7 @@ class myEnv(MultiAgentEnv):
             if i_agent_action < 4:
                 target = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor[i_agent_action]
                 self.agent_list[i].next_satellite_id = target  # 修改下一跳目的
-                print(f"agent {i} transfer to {target}, end is {self.end}, time_step is {self.time}")
+                # print(f"agent {i} transfer to {target}, end is {self.end}, time_step is {self.time}")
             else:
                 self.agent_list[i].data_amount *= (1 - self.compression_ratio_list[i_agent_action - 4])  # 修改数据量
 
@@ -138,10 +139,10 @@ class myEnv(MultiAgentEnv):
                 break
         # TODO: 添加数据压缩的负向奖励
         # print(reward)
-        reward = reward.sum() if not arrived else reward.sum() + 10000
+        reward = reward.sum() if not arrived else reward.sum() + 100
         done = arrived or self.time >= self.episode_limit
 
-        information = None
+        information = {}
 
         return reward, done, information
 
@@ -214,7 +215,8 @@ class myEnv(MultiAgentEnv):
             state[3] = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor_bandwidths[1]
             state[4] = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor_bandwidths[2]
             state[5] = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor_bandwidths[3]
-            state[6:] = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor
+            state[6:-1] = self.satellite_list[self.agent_list[i].curr_satellite_id].neighbor
+            state[-1] = self.end
             states.append(state)
         return states
 
@@ -243,6 +245,9 @@ class myEnv(MultiAgentEnv):
     
     def get_total_actions(self):
         return self.n_actions
+    
+    def get_stats(self):
+        return None
     
 
 if __name__ == '__main__':
