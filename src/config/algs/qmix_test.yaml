@@ -6,10 +6,10 @@ epsilon_start: 1.0
 epsilon_finish: 0.05
 epsilon_anneal_time: 100000 # 500000 for 6h_vs_8z
 
-runner: "parallel" #"episode_test"
-batch_size_run: 8 # batch_size_run=4, buffer_size = 2500, batch_size=64  for 3s5z_vs_3s6z
+runner: "episode_test"
+batch_size_run: 1 # batch_size_run=4, buffer_size = 2500, batch_size=64  for 3s5z_vs_3s6z
 buffer_size: 5000 
-batch_size: 64
+batch_size: 128
 optimizer: 'adam'
 
 t_max: 10050000
@@ -27,7 +27,7 @@ mixer: "qmix"
 mixing_embed_dim: 32
 hypernet_embed: 64
 lr: 0.001 # Learning rate for agents
-td_lambda: 0.9 # 0.3 for 6h_vs_8z
+td_lambda: 0.6 # 0.3 for 6h_vs_8z
 optimizer: 'adam'
 q_lambda: False
 

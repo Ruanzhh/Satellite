@@ -6,9 +6,12 @@ from modules.mixers.qatten import QattenMixer
 from envs.matrix_game import print_matrix_status
 from utils.rl_utils import build_td_lambda_targets, build_q_lambda_targets
 import torch as th
+import torch.optim as optim
 from torch.optim import RMSprop, Adam
 import numpy as np
+from torch.nn import functional as F
 from utils.th_utils import get_parameters_num
+from torch import nn as nn
 
 class NQLearner:
     def __init__(self, mac, scheme, logger, args):
@@ -44,6 +47,7 @@ class NQLearner:
         self.log_stats_t = -self.args.learner_log_interval - 1
         self.train_t = 0
 
+        self.rnd = RndNetwork(args, args.state_shape, 128, args.state_shape)
         # priority replay
         self.use_per = getattr(self.args, 'use_per', False)
         self.return_priority = getattr(self.args, "return_priority", False)
@@ -56,9 +60,24 @@ class NQLearner:
         rewards = batch["reward"][:, :-1]
         actions = batch["actions"][:, :-1]
         terminated = batch["terminated"][:, :-1].float()
+        terminated_ = batch["terminated"].float()
         mask = batch["filled"][:, :-1].float()
+        mask_ = batch["filled"].float()
         mask[:, 1:] = mask[:, 1:] * (1 - terminated[:, :-1])
+        mask_[:, 1:] = mask_[:, 1:] * (1 - terminated_[:, :-1])
         avail_actions = batch["avail_actions"]
+        state = batch["state"]
+        # print(state.shape)
+        b, t, _ = state.shape
+        loss_model_list = []
+        for _ in range(100):
+            loss_model = self.rnd.update(
+                state.reshape(b*t, -1), mask_.reshape(b*t, -1))
+            # print(loss_model.mean())
+            loss_model_list.append(loss_model)
+        loss_models = th.stack(loss_model_list)
+        novel_reward = loss_models.mean(dim=0).reshape(b, t, 1)[:,1:]
+        print(loss_model.mean())
         
         # Calculate estimated Q-Values
         self.mac.agent.train()
@@ -72,7 +91,9 @@ class NQLearner:
         # Pick the Q-Values for the actions taken by each agent
         chosen_action_qvals = th.gather(mac_out[:, :-1], dim=3, index=actions).squeeze(3)  # Remove the last dim
         chosen_action_qvals_ = chosen_action_qvals
-
+        # print(rewards.shape)
+        # rewards = rewards + novel_reward * 0.01 * max(0, 1-t_env/500000)
+        # print(rewards.mean(), novel_reward.mean())
         # Calculate the Q-Values necessary for the target
         with th.no_grad():
             self.target_mac.agent.train()
@@ -126,6 +147,12 @@ class NQLearner:
         grad_norm = th.nn.utils.clip_grad_norm_(self.params, self.args.grad_norm_clip)
         self.optimiser.step()
 
+        # loss_model_list = []
+        # for _ in range(self.args.predict_epoch):
+        #     loss_model = self.rnd.update(
+        #         state, mask)
+        #     loss_model_list.append(loss_model)
+
         if (episode_num - self.last_target_update_episode) / self.args.target_update_interval >= 1.0:
             self._update_targets()
             self.last_target_update_episode = episode_num
@@ -167,6 +194,7 @@ class NQLearner:
 
     def cuda(self):
         self.mac.cuda()
+        self.rnd.cuda()
         self.target_mac.cuda()
         if self.mixer is not None:
             self.mixer.cuda()
@@ -185,3 +213,42 @@ class NQLearner:
         if self.mixer is not None:
             self.mixer.load_state_dict(th.load("{}/mixer.th".format(path), map_location=lambda storage, loc: storage))
         self.optimiser.load_state_dict(th.load("{}/opt.th".format(path), map_location=lambda storage, loc: storage))
+
+class FCEncoder(nn.Module):
+    def __init__(self, num_inputs, hidden_dim, num_outputs):
+        super(FCEncoder, self).__init__()
+        self.fc1 = nn.Linear(num_inputs, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, num_outputs)
+    def forward(self, input):
+        return self.fc2(F.relu(self.fc1(input)))
+
+class RndNetwork(nn.Module):
+
+    def __init__(self, args, num_inputs, hidden_dim, num_outputs, lr=3e-4):
+        super(RndNetwork, self).__init__()
+
+        self.predictor = FCEncoder(num_inputs, hidden_dim, num_outputs)
+        self.target = FCEncoder(num_inputs, hidden_dim, num_outputs)
+        
+        self.optimizer = optim.Adam(self.predictor.parameters(), lr=lr)
+
+    def forward(self, input):
+        predict = self.predictor(input)
+        with th.no_grad():
+            target = self.target(input)
+
+        return predict, target
+
+    def update(self, input, mask):
+        if mask.sum() > 0:
+            predict, target = self.forward(input)
+            loss = F.mse_loss(predict, target, reduction='none')
+            loss = loss.sum(dim=-1, keepdim=True)
+            predict_error_intrinsic = loss.detach()
+            loss = (loss * mask).sum() / mask.sum()
+
+            self.optimizer.zero_grad()
+            loss.backward()
+            th.nn.utils.clip_grad_norm_(self.predictor.parameters(), 10.)
+            self.optimizer.step()            
+        return predict_error_intrinsic

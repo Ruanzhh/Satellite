@@ -4,7 +4,7 @@ from components.episode_buffer import EpisodeBatch
 import numpy as np
 
 
-class EpisodeRunner:
+class EpisodeTestRunner:
 
     def __init__(self, args, logger):
         self.args = args
@@ -46,10 +46,12 @@ class EpisodeRunner:
         self.t = 0
 
     def run(self, test_mode=False):
+        print("test...")
         self.reset()
 
         terminated = False
         episode_return = 0
+        reward_list = []
         self.mac.init_hidden(batch_size=self.batch_size)
 
         while not terminated:
@@ -70,6 +72,7 @@ class EpisodeRunner:
             
             reward, terminated, env_info = self.env.step(actions[0])
             episode_return += reward
+            reward_list.append(reward)
 
             post_transition_data = {
                 "actions": cpu_actions,
@@ -105,8 +108,10 @@ class EpisodeRunner:
             self.t_env += self.t
 
         cur_returns.append(episode_return)
+        print(len(reward_list), np.sum(reward_list))
 
-        # if test_mode and (len(self.test_returns) == self.args.test_nepisode):
+        if test_mode and (len(self.test_returns) == self.args.test_nepisode):
+            print(len(reward_list), np.sum(reward_list))
         #     self._log(cur_returns, cur_stats, log_prefix)
         # elif self.t_env - self.log_train_stats_t >= self.args.runner_log_interval:
         #     self._log(cur_returns, cur_stats, log_prefix)

@@ -1,0 +1,164 @@
+[DEBUG 09:58:10] git.util Failed checking if running in CYGWIN due to: FileNotFoundError(2, 'No such file or directory')
+[DEBUG 09:58:10] git.cmd Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=None)
+[DEBUG 09:58:10] git.cmd Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=None)
+[DEBUG 09:58:10] git.cmd Popen(['git', 'cat-file', '--batch-check'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=<valid stream>)
+[DEBUG 09:58:10] git.cmd Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=None)
+[DEBUG 09:58:10] git.cmd Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=None)
+[DEBUG 09:58:10] git.cmd Popen(['git', 'cat-file', '--batch-check'], cwd=/home/ruanzhonghai/work/Satellite, universal_newlines=False, shell=None, istream=<valid stream>)
+src/main.py:100: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
+  config_dict = yaml.load(f)
+src/main.py:52: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
+  config_dict = yaml.load(f)
+src/main.py:60: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  if isinstance(v, collections.Mapping):
+[INFO 09:58:10] root Saving to FileStorageObserver in /home/ruanzhonghai/work/Satellite/results/sacred/myenv/qmix_env=8_adam_td_lambda.
+[DEBUG 09:58:11] pymarl Using capture mode "fd"
+pygame 2.5.2 (SDL 2.28.2, Python 3.8.17)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+[INFO 09:58:11] pymarl Running command 'my_main'
+[INFO 09:58:11] pymarl Started run with ID "102"
+[DEBUG 09:58:11] pymarl Starting Heartbeat
+[DEBUG 09:58:11] my_main Started
+[INFO 09:58:11] my_main Experiment Parameters:
+[INFO 09:58:11] my_main 
+
+{   'action_selector': 'epsilon_greedy',
+    'agent': 'n_rnn',
+    'agent_output_type': 'q',
+    'batch_size': 64,
+    'batch_size_run': 8,
+    'buffer_cpu_only': True,
+    'buffer_size': 5000,
+    'checkpoint_path': '',
+    'critic_lr': 0.0005,
+    'cuda_num': 1,
+    'env': 'myenv',
+    'env_args': {   'map_name': 'myenv',
+                    'seed': 220577847},
+    'epsilon_anneal_time': 100000,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 1.0,
+    'evaluate': False,
+    'gain': 0.01,
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'hypernet_embed': 64,
+    'label': 'default_label',
+    'learner': 'nq_learner',
+    'learner_log_interval': 1000,
+    'load_step': 0,
+    'local_results_path': 'results',
+    'log_interval': 1000,
+    'lr': 0.001,
+    'mac': 'n_mac',
+    'mixer': 'qmix',
+    'mixing_embed_dim': 32,
+    'name': 'qmix_env=8_adam_td_lambda',
+    'obs_agent_id': True,
+    'obs_last_action': False,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'optimizer': 'adam',
+    'per_alpha': 0.6,
+    'per_beta': 0.4,
+    'q_lambda': False,
+    'repeat_id': 1,
+    'return_priority': False,
+    'rnn_hidden_dim': 64,
+    'run': 'default',
+    'runner': 'parallel',
+    'runner_log_interval': 1000,
+    'save_model': True,
+    'save_model_interval': 200000,
+    'save_replay': False,
+    'seed': 220577847,
+    't_max': 10050000,
+    'target_update_interval': 200,
+    'td_lambda': 0.6,
+    'test_greedy': True,
+    'test_interval': 1000,
+    'test_nepisode': 8,
+    'use_cuda': True,
+    'use_layer_norm': False,
+    'use_orthogonal': False,
+    'use_per': False,
+    'use_tensorboard': False}
+
+[INFO 09:58:16] my_main Beginning training for 10050000 timesteps
+/home/ruanzhonghai/work/Satellite/src/components/episode_buffer.py:103: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  v = th.tensor(v, dtype=dtype, device=self.device)
+[INFO 09:58:21] my_main t_env: 8157 / 10050000
+[INFO 09:58:21] my_main Estimated time left: 1 hours, 28 minutes, 21 seconds. Time passed: 4 seconds
+[INFO 09:58:32] my_main Saving models to results/models/qmix_env=8_adam_td_lambda__2024-05-18_09-58-11/8157
+[INFO 09:58:32] my_main Recent Stats | t_env:       8157 | Episode:        8
+ep_length_mean:          1019.6250	epsilon:                   1.0000	return_mean:             5662.3438	return_std:              1246.1838
+test_ep_length_mean:     1728.1250	test_return_mean:        4645.9438	test_return_std:         2063.4966	
+[INFO 09:58:44] my_main t_env: 24006 / 10050000
+[INFO 09:58:44] my_main Estimated time left: 4 hours, 4 minutes, 48 seconds. Time passed: 28 seconds
+[INFO 09:58:51] my_main Recent Stats | t_env:      24006 | Episode:       16
+ep_length_mean:          1981.1250	epsilon:                   0.9225	return_mean:             3978.8374	return_std:              2539.5303
+test_ep_length_mean:     1383.6250	test_return_mean:        5747.3726	test_return_std:         1482.5154	
+[INFO 09:59:07] my_main t_env: 42693 / 10050000
+[INFO 09:59:07] my_main Estimated time left: 3 hours, 23 minutes, 21 seconds. Time passed: 50 seconds
+[INFO 09:59:23] my_main Recent Stats | t_env:      42693 | Episode:       24
+ep_length_mean:          2335.8750	epsilon:                   0.7719	return_mean:             4258.7847	return_std:              2184.0967
+test_ep_length_mean:     3027.0000	test_return_mean:        3212.5007	test_return_std:         2094.2542	
+[INFO 09:59:40] my_main t_env: 61604 / 10050000
+[INFO 09:59:40] my_main Estimated time left: 4 hours, 50 minutes, 0 seconds. Time passed: 1 minutes, 23 seconds
+[INFO 09:59:59] my_main Recent Stats | t_env:      61604 | Episode:       32
+ep_length_mean:          2363.8750	epsilon:                   0.5944	return_mean:             3068.2341	return_std:              3475.5864
+test_ep_length_mean:     3865.0000	test_return_mean:        347.4728	test_return_std:         3275.1956	
+[INFO 10:00:27] my_main t_env: 87287 / 10050000
+[INFO 10:00:27] my_main Estimated time left: 5 hours, 7 minutes, 58 seconds. Time passed: 2 minutes, 11 seconds
+[INFO 10:01:01] my_main Recent Stats | t_env:      87287 | Episode:       40
+ep_length_mean:          3210.3750	epsilon:                   0.4148	return_mean:             1345.7113	return_std:              7803.2671
+test_ep_length_mean:     7663.7500	test_return_mean:        -10467.4873	test_return_std:         8401.5400	
+[INFO 10:01:35] my_main t_env: 151973 / 10050000
+[INFO 10:01:35] my_main Estimated time left: 2 hours, 52 minutes, 7 seconds. Time passed: 3 minutes, 18 seconds
+[INFO 10:02:10] my_main Recent Stats | t_env:     151973 | Episode:       48
+ep_length_mean:          8085.7500	epsilon:                   0.1708	return_mean:             -9894.8613	return_std:              10260.7354
+test_ep_length_mean:     10000.0000	test_return_mean:        -24701.2012	test_return_std:         5408.2876	
+[INFO 10:02:45] my_main t_env: 231973 / 10050000
+[INFO 10:02:45] my_main Estimated time left: 2 hours, 22 minutes, 50 seconds. Time passed: 4 minutes, 28 seconds
+[INFO 10:03:17] my_main Saving models to results/models/qmix_env=8_adam_td_lambda__2024-05-18_09-58-11/231973
+[INFO 10:03:17] my_main Recent Stats | t_env:     231973 | Episode:       56
+ep_length_mean:          10000.0000	epsilon:                   0.0500	return_mean:             -25660.2324	return_std:              10366.9580
+test_ep_length_mean:     10000.0000	test_return_mean:        -36768.5078	test_return_std:         8264.4795	
+[INFO 10:04:04] my_main t_env: 311973 / 10050000
+[INFO 10:04:04] my_main Estimated time left: 2 hours, 40 minutes, 19 seconds. Time passed: 5 minutes, 47 seconds
+[INFO 10:04:35] my_main Recent Stats | t_env:     311973 | Episode:       64
+ep_length_mean:          10000.0000	epsilon:                   0.0500	grad_norm:               6618001.0000	loss_td:                 272058.8125
+q_taken_mean:            481.4390	return_mean:             -31970.3965	return_std:              4769.6860	target_mean:             556.0574
+td_error_abs:            272058.8125	test_ep_length_mean:     9998.7500	test_return_mean:        -26627.0078	test_return_std:         9956.9639
+
+[INFO 10:05:18] my_main t_env: 391973 / 10050000
+[INFO 10:05:18] my_main Estimated time left: 2 hours, 30 minutes, 6 seconds. Time passed: 7 minutes, 2 seconds
+[INFO 10:05:49] my_main Recent Stats | t_env:     391973 | Episode:       72
+ep_length_mean:          10000.0000	epsilon:                   0.0500	grad_norm:               140380816.0000	loss_td:                 3241194.7500
+q_taken_mean:            983.3854	return_mean:             -29110.5254	return_std:              12696.4189	target_mean:             560.2431
+td_error_abs:            3241194.7500	test_ep_length_mean:     8799.8750	test_return_mean:        -23497.6406	test_return_std:         17603.6113
+
+[INFO 10:06:33] my_main t_env: 463526 / 10050000
+[INFO 10:06:33] my_main Estimated time left: 2 hours, 46 minutes, 16 seconds. Time passed: 8 minutes, 16 seconds
+[INFO 10:07:04] my_main Saving models to results/models/qmix_env=8_adam_td_lambda__2024-05-18_09-58-11/463526
+[INFO 10:07:04] my_main Recent Stats | t_env:     463526 | Episode:       80
+ep_length_mean:          8944.1250	epsilon:                   0.0500	grad_norm:               85873344.0000	loss_td:                 1705018.3750
+q_taken_mean:            916.8361	return_mean:             -18350.4805	return_std:              16550.3359	target_mean:             602.7883
+td_error_abs:            1705018.3750	test_ep_length_mean:     9883.7500	test_return_mean:        -22514.9531	test_return_std:         8557.5723
+
+[INFO 10:07:46] my_main t_env: 543526 / 10050000
+[INFO 10:07:46] my_main Estimated time left: 2 hours, 25 minutes, 38 seconds. Time passed: 9 minutes, 30 seconds
+[INFO 10:08:19] my_main Recent Stats | t_env:     543526 | Episode:       88
+ep_length_mean:          10000.0000	epsilon:                   0.0500	grad_norm:               19968338.0000	loss_td:                 264585.1875
+q_taken_mean:            703.7642	return_mean:             -19370.1543	return_std:              9855.7490	target_mean:             612.9003
+td_error_abs:            264585.1875	test_ep_length_mean:     8791.8750	test_return_mean:        -19015.5898	test_return_std:         11748.5898
+
+[INFO 10:09:02] my_main t_env: 615102 / 10050000
+[INFO 10:09:02] my_main Estimated time left: 2 hours, 46 minutes, 42 seconds. Time passed: 10 minutes, 46 seconds
+[INFO 10:09:32] my_main Recent Stats | t_env:     615102 | Episode:       96
+ep_length_mean:          8947.0000	epsilon:                   0.0500	grad_norm:               12441812.0000	loss_td:                 267863.2500
+q_taken_mean:            519.4949	return_mean:             -14534.6396	return_std:              10830.4121	target_mean:             616.3879
+td_error_abs:            267863.2500	test_ep_length_mean:     7603.8750	test_return_mean:        -14318.9580	test_return_std:         18069.3457
+
+[INFO 10:11:26] my_main t_env: 690122 / 10050000
+[INFO 10:11:26] my_main Estimated time left: 4 hours, 59 minutes, 24 seconds. Time passed: 13 minutes, 10 seconds

@@ -11,6 +11,7 @@ class NMAC(BasicMAC):
         super(NMAC, self).__init__(scheme, groups, args)
         
     def select_actions(self, ep_batch, t_ep, t_env, bs=slice(None), test_mode=False):
+        test_mode = False
         # Only select actions for the selected batch elements in bs
         avail_actions = ep_batch["avail_actions"][:, t_ep]
         qvals = self.forward(ep_batch, t_ep, test_mode=test_mode)

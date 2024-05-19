@@ -13,7 +13,7 @@ class Satellite:
 
     def changeBandwiths(self):
         for i in range(4):
-            self.neighbor_bandwidths[i] = max(self.neighbor_bandwidths[i]+random.randint(-3, 3), 0)
+            self.neighbor_bandwidths[i] = max(self.neighbor_bandwidths[i]+random.randint(-3, 3)*0.1, 0)
 
 
 

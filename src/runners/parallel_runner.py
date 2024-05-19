@@ -4,6 +4,7 @@ from components.episode_buffer import EpisodeBatch
 from multiprocessing import Pipe, Process
 import numpy as np
 import torch as th
+import os, wandb, csv
 
 
 # Based (very) heavily on SubprocVecEnv from OpenAI Baselines
@@ -28,6 +29,10 @@ class ParallelRunner:
             p.daemon = True
             p.start()
 
+        self.csv_dir = f'./csv_files/{args.mixer}/{args.label}/'
+        self.csv_path = f'{self.csv_dir}_{args.label}.csv'
+        if not os.path.exists(self.csv_dir):
+            os.makedirs(self.csv_dir)
         self.parent_conns[0].send(("get_env_info", None))
         self.env_info = self.parent_conns[0].recv()
         self.episode_limit = self.env_info["episode_limit"]
@@ -202,6 +207,21 @@ class ParallelRunner:
 
         n_test_runs = max(1, self.args.test_nepisode // self.batch_size) * self.batch_size
         if test_mode and (len(self.test_returns) == n_test_runs):
+            # print("in test mode: ", len(cur_returns))
+            # print(env_stats)
+            datas = []
+            times = []
+            max_times = []
+            for st in env_stats:
+                max_times.append(st['max_time'])
+                if True:
+                    datas.append(st['data_residule'])
+                    times.append(st['time_cost'])
+            data = None if len(datas) == 0 else np.mean(datas)
+            time = None if len(times) == 0 else np.mean(times)
+            max_time = None if len(max_times) == 0 else np.mean(max_times)
+            reward = np.mean(cur_returns)
+            self.writereward(self.csv_path, reward, data, time, max_time, self.t_env)
             self._log(cur_returns, cur_stats, log_prefix)
         elif self.t_env - self.log_train_stats_t >= self.args.runner_log_interval:
             self._log(cur_returns, cur_stats, log_prefix)
@@ -210,6 +230,18 @@ class ParallelRunner:
             self.log_train_stats_t = self.t_env
 
         return self.batch
+
+    def writereward(self, path, reward, data, time, max_time, step):
+        if os.path.isfile(path):
+            with open(path, 'a+') as f:
+                csv_write = csv.writer(f)
+                csv_write.writerow([step, reward, data, time, max_time])
+        else:
+            with open(path, 'w') as f:
+                csv_write = csv.writer(f)
+                csv_write.writerow(['step', 'reward', 'data', 'time', 'max_time'])
+                csv_write.writerow([step, reward, data, time, max_time])
+        
 
     def _log(self, returns, stats, prefix):
         self.logger.log_stat(prefix + "return_mean", np.mean(returns), self.t_env)

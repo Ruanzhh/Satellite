@@ -10,6 +10,7 @@ import sys
 import torch as th
 from utils.logging import get_logger
 import yaml
+import os,random,subprocess
 
 from run import REGISTRY as run_REGISTRY
 
@@ -63,6 +64,15 @@ def recursive_dict_update(d, u):
     return d
 
 
+def _get_free_gpu_id(free_size=0.7):
+    all_command = "nvidia-smi -q -d Memory |grep -A4 GPU|grep Used"
+    all_result = subprocess.getoutput(all_command)
+    # free
+    if len(all_result)>0:
+        all_data = [float(item.split(':')[1].strip('MiB').strip(' ')) for item in all_result.split('\n')]
+        return np.argmin(all_data)
+    else: return random.randint(0,2)
+
 def config_copy(config):
     if isinstance(config, dict):
         return {k: config_copy(v) for k, v in config.items()}
@@ -98,6 +108,8 @@ if __name__ == '__main__':
     config_dict = recursive_dict_update(config_dict, env_config)
     config_dict = recursive_dict_update(config_dict, alg_config)
 
+    config_dict['cuda_num'] = _get_free_gpu_id()
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(config_dict['cuda_num'])
     # now add all the config to sacred
     ex.add_config(config_dict)
 
